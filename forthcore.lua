@@ -31,6 +31,14 @@ end
 local fprint_x = 0
 local fprint_y = 0
 
+function here()
+    return dict_ptr
+end
+
+function allot(n)
+    dict_ptr = dict_ptr + n
+end
+
 
 function push(p)
     stack_ptr = stack_ptr + 1
@@ -41,6 +49,10 @@ function pop()
     local tos = stack[stack_ptr]
     stack_ptr = stack_ptr - 1
     return tos
+end
+
+function tos()
+    return stack[stack_ptr]
 end
 
 function drop()
@@ -86,6 +98,7 @@ end
  compiled_word_list = {
     ["."] = function() print(pop()) end,
     ["dup"] = function() push(stack[stack_ptr]) end,
+    -- drop 
     ["drop"] = function() stack_ptr = stack_ptr - 1 end,
     ["["] = function()
         state_compile = false
@@ -116,7 +129,6 @@ end
         end
     end
     
-
     --['(S")'] = function()
     --end
 }
@@ -167,7 +179,7 @@ add_new_word("\\", function()
     input_buffer_index = endi + 1
     
 end, true)
-    
+
 
 -- find word in dictionary search order?
 function find_word_in_dict(word)
@@ -238,7 +250,7 @@ function interpret(s)
                 end
             else
                 raw_quit()
-                return false
+                return false, "Unknown word or number " .. word
             end
         end
     until false
@@ -256,4 +268,15 @@ function execute_xt(xt)
         xt()
     end
 end
+
+-- ( addr -- n )
+add_new_word("@", function()
+        push(dict[pop()])
+    end)
+
+-- ( n addr -- )
+add_new_word("!", function()
+        local addr = pop()
+        dict[addr] = pop()
+    end)
 

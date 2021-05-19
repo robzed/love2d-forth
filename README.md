@@ -1,4 +1,8 @@
 
+# Forth in Love2D
+
+Write Forth code to drive Love2D. Entirely written in Lua and Love2D - no external libraries. 
+
 **UNDER DEVELOPMENT**
 
 # Goals
@@ -47,6 +51,9 @@ https://forth-standard.org/standard/diff
 Very minimal. See love2dwords.lua and main.lua.
 
 
+# What's not standard Forth?
+
+Words are searched from a table - that means th
 
 
 # Internals 

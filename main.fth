@@ -1,4 +1,9 @@
+love lua_type lua_print
 
+\ : fread ( file -- 
+
+0 variable textx
+0 variable texty
 
 : love.draw ( -- )
     300 400 S" hello" love.graphics.print

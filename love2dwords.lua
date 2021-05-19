@@ -7,6 +7,8 @@
 -- Number of parameters might be tricky?
 -- at least make a table?
 
+add_new_word('love', function() push(love) end)
+
 add_new_word('love.graphics.print', function()
         drop() -- drop length
         love.graphics.print(pop(), pop(), pop())
@@ -16,5 +18,5 @@ add_new_word('love.keyboard.setTextInput1', function() love.keyboard.setTextInpu
 
 -- love.keyboard.setTextInput( enable, x, y, w, h )
 
-add_new_word('love.keyboard.hasTextInput', function() push(love.keyboard.hasTextInput) end)
+add_new_word('love.keyboard.hasTextInput', function() push(love.keyboard.hasTextInput()) end)
 

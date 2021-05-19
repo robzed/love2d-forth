@@ -3,6 +3,8 @@
 --
 
 require("forthcore")
+require("forthwords")
+require("lua_interface")
 require("love2dwords")
 
 function love.load()
@@ -10,20 +12,26 @@ function love.load()
     
     main_forth_file, err = love.filesystem.read("main.fth")
     if main_forth_file then
-        interpret(main_forth_file)
+        success, err = interpret(main_forth_file)
+
+        if not success then
+            print("Problem loading main.fth file")
+            print(err)
+            success = love.window.showMessageBox("Fatal Error", string.format("Problem loading main.fth file'%s'\n", err) , "error")
+            os.exit(1)
+        end
+        
     end
     interpret("love.load")
-    forth_update_xt = get_word_xt("love.update")
-    forth_draw_xt = get_word_xt("love.draw")
 end
 
 function love.update(dt)
     push(dt)
-    execute_xt(forth_update_xt)
+    execute_xt(get_word_xt("love.update"))
 end
 
 function love.draw()
-    execute_xt(forth_draw_xt)
+    execute_xt(get_word_xt("love.draw"))
 end
 
 function love.textedited( text, start, length )
