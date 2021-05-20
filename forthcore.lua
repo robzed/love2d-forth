@@ -4,7 +4,7 @@
 -- NOTES on operation and Word-set - see file README.md
 
 
-local dict = {}
+local dict = { ['base'] = 10 }
 local dict_ptr = 1
 
 -- maybe make this a table then collapse into string when finished for speed?
@@ -12,17 +12,19 @@ local dict_ptr = 1
 local current_word = ""
 local current_word_name = nil
 
-local stack = {}
-local stack_ptr = 0     -- no top of stack
-    
+-- maybe we should put the stack in the dictionary?
+-- then @ would work
+dstack = {}
+dstack_ptr = 0     -- no top of stack
+
 local return_stack = {}
 local return_stack_ptr = 0    -- no top of stack
-    
-local input_buffer_index = 1
-local input_buffer = ""
 
-local state_compile = false
-local number_base = 10
+ 
+input_buffer_index = 1
+input_buffer = ""
+ 
+state_compile = false
 
 -- print function can be replaced
 local function fprint(s)
@@ -41,22 +43,22 @@ end
 
 
 function push(p)
-    stack_ptr = stack_ptr + 1
-    stack[stack_ptr] = p
+    dstack_ptr = dstack_ptr + 1
+    dstack[dstack_ptr] = p
 end
 
 function pop()
-    local tos = stack[stack_ptr]
-    stack_ptr = stack_ptr - 1
+    local tos = dstack[dstack_ptr]
+    dstack_ptr = dstack_ptr - 1
     return tos
 end
 
 function tos()
-    return stack[stack_ptr]
+    return dstack[dstack_ptr]
 end
 
 function drop()
-    stack_ptr = stack_ptr - 1
+    dstack_ptr = dstack_ptr - 1
 end
 
 
@@ -66,7 +68,7 @@ local function rpush(p)
 end
 
 local function rpop()
-    local tos = stack[return_stack_ptr]
+    local tos = dstack[return_stack_ptr]
     return_stack = return_stack_ptr - 1
     return tos
 end
@@ -97,9 +99,45 @@ end
 
  compiled_word_list = {
     ["."] = function() print(pop()) end,
-    ["dup"] = function() push(stack[stack_ptr]) end,
+    ["dup"] = function() push(dstack[dstack_ptr]) end,
     -- drop 
-    ["drop"] = function() stack_ptr = stack_ptr - 1 end,
+    ["drop"] = function() dstack_ptr = dstack_ptr - 1 end,
+    ["swap"] = function() 
+        local tos = dstack[dstack_ptr]
+        dstack[dstack_ptr] = dstack[dstack_ptr-1]
+        dstack[dstack_ptr-1] = tos
+    end,
+    ["nip"] = function()
+        local tos = dstack[dstack_ptr]
+        dstack_ptr = dstack_ptr - 1
+        dstack[dstack_ptr] = tos
+    end,
+    ["over"] = function()
+        push(dstack[dstack_ptr-1])
+    end,
+    ["tuck"] = function()  
+        -- ( n1 n2 -- n2 n1 n2 ) basically swap over
+        -- swap part
+        local tos = dstack[dstack_ptr]
+        dstack[dstack_ptr] = dstack[dstack_ptr-1]
+        dstack[dstack_ptr-1] = tos
+        -- over part
+        push(tos)
+    end,
+
+    ["+"] = function()
+        local tos = pop()
+        dstack[dstack_ptr] = tos + dstack[dstack_ptr] 
+        end,
+    -- 5 3 - 
+    ["-"] = function() dstack[dstack_ptr] = dstack[dstack_ptr] - pop() end,
+    
+    ["base"] = function()
+        push('base')
+    end,
+    ["decimal"] = function()
+        dict.base = 10
+    end,
     ["["] = function()
         state_compile = false
     end,
@@ -110,6 +148,7 @@ end
         local word = get_next_word()
         if word then
             current_word_name = word
+            current_word = ""
             state_compile = true
         else
             error("No name for function")
@@ -125,12 +164,14 @@ end
             compile_raw(string.format("push(%q) push(%f)", s, s:len()))
         else
             push(s)
-            push(len(s))
+            push(s:len())
         end
-    end
+    end,
     
     --['(S")'] = function()
-    --end
+    --end,
+    ['depth'] = function() push(dstack_ptr) end,
+    ['execute'] = function() pop()() end,
 }
 
 local immediate_word_list = {
@@ -206,7 +247,7 @@ function raw_quit()
 end
 
 function raw_abort()
-    stack_ptr = 0
+    dstack_ptr = 0
     raw_quit()
 end
 
@@ -216,7 +257,7 @@ function convert_number(s)
     -- 2. we also might want to handle negative numbers
     -- 3. tonumber only handles unsigned integers in bases other than 10
     -- 4. we might want to handle % $ # operators of FlashForth
-    return tonumber(s, number_base)
+    return tonumber(s, dict.base )
 end
 
 function compile_num(n)
@@ -246,7 +287,7 @@ function interpret(s)
                 if state_compile then
                     compile_num(number)
                 else
-                    push(num)
+                    push(number)
                 end
             else
                 raw_quit()

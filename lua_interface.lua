@@ -49,6 +49,7 @@ add_new_word("lua{}", function() push({}) end)
         local params = {}
         while num_params > 0 do
             table.insert(params, pop())
+            num_params = num_params - 1
         end
             
         local t = pack(f(unpack(params)))
@@ -82,8 +83,9 @@ add_new_word("lua{}", function() push({}) end)
         local params = {}
         while num_params > 0 do
             table.insert(params, pop())
+            num_params = num_params - 1
         end
-            
+
         local t = pack(pcall(f, unpack(params)))
         t[1] = convert_to_forth_bool(t[1])
         for i = 1, t.n do
@@ -103,13 +105,15 @@ add_new_word("lua{}", function() push({}) end)
 -- after this first result. In case of any error, xpcall returns false 
 -- plus the result from err. 
 
- add_new_word('lua_pcall', function()
+ add_new_word('lua_xpcall', function()
         local f = pop()
         local err_xt = pop()
         local num_params = pop()
         local params = {}
         while num_params > 0 do
             table.insert(params, pop())
+            num_params = num_params - 1
+
         end
         
         local t = pack(xpcall(f, err_xt, unpack(params)))
@@ -182,7 +186,7 @@ add_new_word('lua_VERSION', function() push(_VERSION) end)
 
 -- file = io.open (filename [, mode])
 -- io.open ( mode filename | nil filename -- nil file | err nil )
-add_new_word("io.open", function() 
+add_new_word("lua_io.open", function() 
         local filename = pop() 
         local f, err = io.open(filename, pop())
         push(err)
@@ -190,17 +194,30 @@ add_new_word("io.open", function()
     end)
 
 -- io.close ( f -- )
-add_new_word("io.close", function() pop():close() end)
+add_new_word("lua_io.close", function() pop():close() end)
 
 -- io.read ( format f -- data )
-add_new_word("io.read", function() local f = pop() push(f:read(pop())) end)
+add_new_word("lua_io.read", function() local f = pop() push(f:read(pop())) end)
 
 
 -- lua_print ( x -- )
 add_new_word("lua_print", function() print(pop()) end)
 
+-- io.write( x -- )
+add_new_word("lua_io.write", function()
+        io.write(pop())
+        end)
 
+add_new_word("lua_io.flush", function() io.flush() end)
 
+--add_new_word("lua_string_char", function() push(string.char(pop())) end)
+add_new_word("lua_string_char", function() 
+        local tos = pop()
+        local s = string.char(tos)
+        push(s)
+    end)
+
+    
 --[[
 
 #REJECTED INTERFACES
