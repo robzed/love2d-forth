@@ -130,7 +130,10 @@ end
         dstack[dstack_ptr] = tos + dstack[dstack_ptr] 
         end,
     -- 5 3 - 
-    ["-"] = function() dstack[dstack_ptr] = dstack[dstack_ptr] - pop() end,
+    ["-"] = function() 
+        local tos = pop()
+        dstack[dstack_ptr] = dstack[dstack_ptr] - tos
+        end,
     
     ["base"] = function()
         push('base')

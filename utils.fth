@@ -4,18 +4,23 @@ decimal
 : cr 10 emit lua_io.flush ;  
 \ replace this . with a routine that prints in the current base
 : . lua_io.write ;
-
-\ display the stack
-( : .s 
-    depth 1 do 
-        i sp@
-    loop
-;
-)
-
-
 : bl 32 ;
 : space bl emit ;
+
+
+\ display the stack
+: .s 
+    depth 1 + 1 do
+        depth i - dstack@ . space
+    loop
+;
+
+S" STACK============" type cr
+0 1 2 3 .s cr
+depth . cr
+S" =================" type cr
+
+
 \ : spaces ( bl emit
 
 \ : new{}param ( i*x x -- t ) 

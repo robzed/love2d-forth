@@ -19,18 +19,16 @@ add_new_word("variable", function()
 local unique_do_index = 1
 
 add_new_word('do', function()
-        local initial = pop()
-        local limit = pop()
-        compile_raw(string.format("for i%i = %i to %i do", unique_do_index, initial, limit-1))
-        unique_do_index = unique_do_index + 1
+        compile_raw(string.format("local initial%i = pop() local limit%i=(pop()-1) for i%i = initial%i, limit%i do", unique_do_index, unique_do_index, unique_do_index, unique_do_index, unique_do_index))
     end, true)
 
 add_new_word('i', function()
-        compile_raw(string.format('i%i', unique_do_index))
+        compile_raw(string.format('push(i%i)', unique_do_index))
     end, true);
 
 add_new_word('loop', function()
         compile_raw('end')
+        unique_do_index = unique_do_index + 1
     end, true)
 
 add_new_word('sinterpret', function()
@@ -47,4 +45,10 @@ add_new_word('sinterpret', function()
 
 add_new_word("count", function()
         push(tos().len)
+    end)
+
+add_new_word("dstack@", function()
+        local offset = pop()
+        local index = dstack_ptr-offset
+        push(dstack[index])
     end)
