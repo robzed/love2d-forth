@@ -52,3 +52,4 @@ add_new_word("dstack@", function()
         local index = dstack_ptr-offset
         push(dstack[index])
     end)
+

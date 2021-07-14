@@ -20,3 +20,5 @@ add_new_word('love.keyboard.setTextInput1', function() love.keyboard.setTextInpu
 
 add_new_word('love.keyboard.hasTextInput', function() push(love.keyboard.hasTextInput()) end)
 
+local utf8 = require("utf8")
+add_new_word("love_utf8", function() push(utf8) end)

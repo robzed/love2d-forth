@@ -134,11 +134,11 @@ add_new_word("lua{}", function() push({}) end)
         push(t[i])
     end)
 
--- lua_string ( addr u -- lua-string )
+-- lua_>string ( addr u -- lua-string )
 -- Convert a Forth string into a Lua string.
 -- NOTE: Since the Forth addresses in this system for strings are
 -- actually not addresses but strings, this is the same as 'drop'
-add_new_word('lua_string', compiled_word_list["drop"])
+add_new_word('lua_>string', compiled_word_list["drop"])
 
 -- lua" ( lua" cccc " -- lua-string ) IMMEDIATE
 -- create a lua string. Immediate word, but  can be used from interpret or compile mode.
@@ -216,6 +216,23 @@ add_new_word("lua_string_char", function()
         local s = string.char(tos)
         push(s)
     end)
+
+--
+-- things that might be useful
+--
+
+add_new_word("lua_loadstring", function() push(loadstring) end)
+add_new_word("lua_collectgarbage", function() push(collectgarbage) end)
+
+-- tables for libraries
+add_new_word("lua_io", function() push(io) end)
+add_new_word("lua_string", function() push(string) end)
+add_new_word("lua_math", function() push(math) end)
+add_new_word("lua_table", function() push(table) end)
+add_new_word("lua_os", function() push(os) end)
+add_new_word("lua_coroutine", function() push(coroutine) end)
+add_new_word("lua_math", function() push(math) end)
+add_new_word("lua_package", function() push(package) end)
 
     
 --[[
