@@ -10,14 +10,14 @@ require("love2dwords")
 function love.load()
     if arg[#arg] == "-debug" then require("mobdebug").start() end
     
-    main_forth_file, err = love.filesystem.read("main.fth")
+    main_forth_file, err = love.filesystem.read("main.forth")
     if main_forth_file then
         success, err = interpret(main_forth_file)
 
         if not success then
-            print("Problem loading main.fth file")
+            print("Problem loading main.forth file")
             print(err)
-            success = love.window.showMessageBox("Fatal Error", string.format("Problem loading main.fth file'%s'\n", err) , "error")
+            success = love.window.showMessageBox("Fatal Error", string.format("Problem loading main.forth file'%s'\n", err) , "error")
             os.exit(1)
         end
         
