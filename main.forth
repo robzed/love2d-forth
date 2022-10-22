@@ -11,9 +11,9 @@
 ;
 : interpret_file lua_nil swap fread drop sinterpret ;
 
-S" utils.fth" interpret_file 
-S" unittests.fth" interpret_file
-S" forth_terminal.fth" interpret_file
+S" utils.forth" interpret_file 
+S" unittests.forth" interpret_file
+S" forth_terminal.forth" interpret_file
 
 0 variable textx
 0 variable texty

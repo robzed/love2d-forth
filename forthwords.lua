@@ -34,7 +34,14 @@ add_new_word('loop', function()
 add_new_word('sinterpret', function()
         local old_buffer = input_buffer
         local old_index = input_buffer_index
-        local state, err = interpret(pop())
+        local str_to_intepret = pop()
+        local state, err
+        if type(str_to_intepret) ~= "string" then
+            err = "Tried to interpret "..type(str_to_intepret)
+            state = false
+        else
+            state, err = interpret(str_to_intepret)
+        end
         if not state then
             push(err)
         end
